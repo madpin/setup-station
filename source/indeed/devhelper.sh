@@ -1,1 +1,2 @@
-function gw() { ./gradlew "$@"; }
+gw() { ./gradlew "$@"; }
+iep() { indeed-entrypoint "$@"; }
