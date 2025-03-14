@@ -153,21 +153,29 @@ ttt() {
   INI_KEY="${ACCOUNT_ID}_${ROLE}"
 
   AWS_CRED_FILE="$HOME/.aws/credentials"
-  python_code=$(
-    cat <<END
+python_code=$(
+  cat <<END
 import configparser
+import os
+
 config = configparser.ConfigParser()
 config.read('$AWS_CRED_FILE')
 
-config['$INI_KEY'] = {
-    'aws_access_key_id': '$AWS_ACCESS_KEY_ID',
-    'aws_secret_access_key': '$AWS_SECRET_ACCESS_KEY',
-    'aws_session_token': '$AWS_SESSION_TOKEN',
-    'region': '$AWS_DEFAULT_REGION'
-}
+# Check if the section already exists
+if '$INI_KEY' not in config or 'aws_session_token' in config['$INI_KEY']:
 
-with open('$AWS_CRED_FILE', 'w') as configfile:
-    config.write(configfile)
+    config['$INI_KEY'] = {
+        'aws_access_key_id': '$AWS_ACCESS_KEY_ID',
+        'aws_secret_access_key': '$AWS_SECRET_ACCESS_KEY',
+        'aws_session_token': '$AWS_SESSION_TOKEN',
+        'region': '$AWS_DEFAULT_REGION'
+    }
+
+    with open('$AWS_CRED_FILE', 'w') as configfile:
+        config.write(configfile)
+else:
+    print(f"Section '$INI_KEY' already exists with long-term credentials. Skipping update.")
+
 END
   )
 
