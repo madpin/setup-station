@@ -1,0 +1,73 @@
+{
+  "actions" : [
+    {
+      "key" : "t",
+      "label" : "",
+      "type" : "application",
+      "value" : "/Applications/iTerm.app"
+    },
+    {
+      "actions" : [
+        {
+          "key" : "s",
+          "label" : "",
+          "type" : "application",
+          "value" : "/Applications/Safari.app"
+        },
+        {
+          "key" : "e",
+          "label" : "",
+          "type" : "application",
+          "value" : "/Applications/Mail.app"
+        },
+        {
+          "key" : "i",
+          "label" : "",
+          "type" : "application",
+          "value" : "/System/Applications/Music.app"
+        },
+        {
+          "key" : "m",
+          "label" : "",
+          "type" : "application",
+          "value" : "/Applications/Messages.app"
+        },
+        {
+          "key" : "f",
+          "label" : "",
+          "type" : "application",
+          "value" : "/Applications/Firefox.app"
+        }
+      ],
+      "key" : "o",
+      "label" : "",
+      "type" : "group"
+    },
+    {
+      "actions" : [
+        {
+          "key" : "e",
+          "label" : "",
+          "type" : "url",
+          "value" : "raycast://extensions/raycast/emoji-symbols/search-emoji-symbols"
+        },
+        {
+          "key" : "p",
+          "label" : "Confetti",
+          "type" : "url",
+          "value" : "raycast://confetti"
+        },
+        {
+          "key" : "c",
+          "label" : "Camera",
+          "type" : "url",
+          "value" : "raycast://extensions/raycast/system/open-camera"
+        }
+      ],
+      "key" : "r",
+      "label" : "",
+      "type" : "group"
+    }
+  ],
+  "type" : "group"
+}
