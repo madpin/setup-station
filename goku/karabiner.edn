@@ -1,0 +1,265 @@
+{:profiles {:Default {:default true
+                      :sim      200 ; keys need to be pressed within this threshold to be considered simultaneous
+                      :simlayer-threshold 250 ; ???????
+                      :alone    300 ; hold for {X-5}ms and single tap registered; hold for {X+5}ms and seen as modifier
+                      :delay    1100 ; time after which the key press is count delayed
+                      :held     350 ; key is fired twice when 1000 ms is elapsed (otherwise seen as a hold command)
+                      }}
+;; !  | means mandatory
+;; #  | means optional
+;; C  | left_command
+;; T  | left_control
+;; O  | left_option
+;; S  | left_shift
+;; F  | fn
+;; Q  | right_command
+;; W  | right_control
+;; E  | right_option
+;; R  | right_shift
+;; !! | mandatory command + control + optional + shift (hyper)
+;; ## | optional any key
+
+ :templates {:launch "osascript -e 'tell application \"%s\" to activate'"}
+ :layers {:hyper-mode {:key :caps_lock :alone {:key :escape}}}
+ :simlayers {:tmux-winmove-mode {:key :q :condi :Terminals}
+             :period-mode {:key :period}
+             :comma-mode {:key :comma}
+             :space-mode {:key :spacebar :condi :macbook-internal}}
+
+ :main [{:des "Hyper Mode - Consumer Key"
+         :rules [:hyper-mode
+                 [:a :!CTOSa] [:b :!CTOSb] [:c :!CTOSc] [:d :!CTOSd] [:e :!CTOSe]
+                 [:f :!CTOSf] [:g :!CTOSg] [:h :!CTOSh] [:i :!CTOSi] [:j :!CTOSj]
+                 [:k :!CTOSk] [:l :!CTOSl] [:m :!CTOSm] [:n :!CTOSn] [:o :!CTOSo]
+                 [:p :!CTOSp] [:q :!CTOSq] [:r :!CTOSr] [:s :!CTOSs] [:t :!CTOSt]
+                 [:u :!CTOSu] [:v :!CTOSv] [:w :!CTOSw] [:x :!CTOSx] [:y :!CTOSy]
+                 [:z :!CTOSz] [:1 :!CTOS1] [:2 :!CTOS2] [:3 :!CTOS3] [:4 :!CTOS4]
+                 [:5 :!CTOS5] [:6 :!CTOS6] [:7 :!CTOS7] [:8 :!CTOS8] [:9 :!CTOS9] [:0 :!CTOS0]
+
+                 [:f1 :!CTOSf1] [:f2 :!CTOSf2] [:f3 :!CTOSf3] [:f4 :!CTOSf4] [:f5 :!CTOSf5]
+                 [:f6 :!CTOSf6] [:f7 :!CTOSf7] [:f8 :!CTOSf8] [:f9 :!CTOSf9] [:f10 :!CTOSf10]
+                 [:f11 :!CTOSf11] [:f12 :!CTOSf12]
+
+                 [:return_or_enter :!CTOSreturn_or_enter] [:escape :!CTOSescape]
+                 [:delete_or_backspace :!CTOSdelete_or_backspace]
+                 [:delete_forward :!CTOSdelete_forward]
+                 [:tab :!CTOStab] [:spacebar :!CTOSspacebar] [:hyphen :!CTOShyphen]
+                 [:equal_sign :!CTOSequal_sign] [:open_bracket :!CTOSopen_bracket]
+                 [:close_bracket :!CTOSclose_bracket] [:backslash :!CTOSbackslash]
+                 [:semicolon :!CTOSsemicolon] [:quote :!CTOSquote]
+                 [:grave_accent_and_tilde :!CTOSgrave_accent_and_tilde]
+                 [:comma :!CTOScomma] [:period :!CTOSperiod] [:slash :!CTOSslash]
+                 [:up_arrow :!CTOSup_arrow] [:down_arrow :!CTOSdown_arrow]
+                 [:left_arrow :!CTOSleft_arrow] [:right_arrow :!CTOSright_arrow]
+                 [:page_up :!CTOSpage_up] [:page_down :!CTOSpage_down]
+                 [:home :!CTOShome] [:end :!CTOSend]
+                 [:keypad_num_lock :!CTOSkeypad_num_lock] [:keypad_slash :!CTOSkeypad_slash]
+                 [:keypad_asterisk :!CTOSkeypad_asterisk] [:keypad_hyphen :!CTOSkeypad_hyphen]
+                 [:keypad_plus :!CTOSkeypad_plus] [:keypad_enter :!CTOSkeypad_enter]
+                 [:keypad_1 :!CTOSkeypad_1] [:keypad_2 :!CTOSkeypad_2] [:keypad_3 :!CTOSkeypad_3]
+                 [:keypad_4 :!CTOSkeypad_4] [:keypad_5 :!CTOSkeypad_5] [:keypad_6 :!CTOSkeypad_6]
+                 [:keypad_7 :!CTOSkeypad_7] [:keypad_8 :!CTOSkeypad_8] [:keypad_9 :!CTOSkeypad_9]
+                 [:keypad_0 :!CTOSkeypad_0]
+                 [:keypad_period :!CTOSkeypad_period] [:keypad_equal_sign :!CTOSkeypad_equal_sign]
+                 [:keypad_comma :!CTOSkeypad_comma] [:print_screen :!CTOSprint_screen]
+                 [:scroll_lock :!CTOSscroll_lock] [:pause :!CTOSpause]
+                 [:insert :!CTOSinsert]]}
+
+;;         {:des "Hyper Mode - Navigation [VI style]"fd
+;;          :rules [:hyper-mode
+;;                  [:j :down_arrow]
+;;                  [:k :up_arrow]
+;;                  [:h :left_arrow]
+;;                  [:l :right_arrow]
+;;                  [:b :!Oleft_arrow]
+;;                  [:w :!Oright_arrow]aaa
+;;                  [:u :home]
+;;                  [:i :end]
+;;                  [:!Cj :!Sdown_arrow]
+;;                  [:!Ck :!Sup_arrow]
+;;                  [:!Ch :!Sleft_arrow]
+;;                  [:!Cl :!Sright_arrow]
+;;                  [:!Cb :!SOleft_arrow]
+;;                  [:!Cw :!SOright_arrow]
+;;                  [:!Cu :!Shome]
+;;                  [:!Ci :!Send]
+;;                  [:!Oj {:mkey {:y 1536}}]
+;;                  [:!Ok {:mkey {:y -1536}}]
+;;                  [:!Oh {:mkey {:x -1536}}]
+;;                  [:!Ol {:mkey {:x 1536}}]]}
+
+        {:des "Hyper Mode - Mousekey"
+         :rules [:hyper-mode
+                 [:!Cs {:mkey {:y 1536}}]
+                 [:!Cw {:mkey {:y -1536}}]
+                 [:!Ca {:mkey {:x -1536}}]
+                 [:!Cd {:mkey {:x 1536}}]
+                 [:!Cq {:pkey :button1}]
+                 [:!Ce {:pkey :button2}]]}
+
+;;         {:des "Hyper Mode - Deletion"
+;;          :rules [:hyper-mode
+;;                  [:n :!Odelete_or_backspace]
+;;                  [:m :delete_or_backspace]
+;;                  [:comma :delete_forward]
+;;                  [:period :!Odelete_forward]
+;;                  [:!Cn :!Cdelete_or_backspace]
+;;                  [:!Cm :!Cdelete_or_backspace]
+;;                  [:!Ccomma :!Cdelete_forward]
+;;                  [:!Cperiod :!Cdelete_forward]]}
+
+;;         {:des "Hyper Mode - Misc"
+;;          :rules [:hyper-mode
+;;                  [:escape :caps_lock]
+;;                  [:grave_accent_and_tilde :!CS5]]}
+
+;;         {:des "Hyper Mode - Misc2"
+;;          :rules [:hyper-mode
+;;                  [:f4 :!Cf14]
+;;                  [:f5 :!Cf15]
+;;                  [:f6 :!Cf16]
+;;                  [:f7 :!Cf17]
+;;                  [:f8 :!Cf18]
+;;                  [:f9 :!Cf19]
+;;                  [:f10 :!Cf20]
+;;                  [:f11 :!Cf21]
+;;                  [:f12 :!Cf22]]}
+
+        ;; {:des "Space Mode (Change Mac keyboard to Filco Minila layout with spacebar FN)"
+        ;;  :rules [:space-mode
+        ;;          [:##s :left_arrow]
+        ;;          [:##d :down_arrow]
+        ;;          [:##f :right_arrow]
+        ;;          [:##e :up_arrow]
+
+        ;;          [:##j :insert]
+        ;;          [:##k :home]
+        ;;          [:##l :page_up]
+        ;;          [:##semicolon :delete_or_backspace]
+        ;;          [:##m :delete_forward]
+        ;;          [:##comma :end]
+        ;;          [:##period :page_down]]}
+
+        {:des "Tmux Mode [Q] as Trigger Key"
+         :rules [:tmux-winmove-mode ;Ta is the prefix for tmux
+                 [:comma [:!Ta :comma]]
+                 [:open_bracket [:!Ta :open_bracket]]
+                 [:close_bracket [:!Ta :close_bracket]]
+                 [:hyphen [:!Ta :hyphen]]
+                 [:backslash [:!Ta :backslash]]
+                 [:f [:!Ta :f]]
+                 [:e [:!Ta :e]]
+                 [:w [:!Ta :w]]
+                 [:h [:!Ta :h]]
+                 [:j [:!Ta :j]]
+                 [:k [:!Ta :k]]
+                 [:l [:!Ta :l]]
+                 [:v [:!Ta :v]]
+                 [:s [:!Ta :s]]
+                 [:m [:!Ta :z]]
+                 [:x [:!Ta :x]]
+                 [:c [:!Ta :c]]
+                 [:1 [:!Ta :1]]
+                 [:2 [:!Ta :2]]
+                 [:3 [:!Ta :3]]
+                 [:4 [:!Ta :4]]
+                 [:5 [:!Ta :5]]]}
+
+        {:des "Comma Mode [,] as Trigger Key"
+         :rules [:comma-mode
+                 [:a :open_bracket]
+                 [:s :close_bracket]
+                 [:d :!S7]
+                 [:f :!S8]
+                 [:q :!Shyphen]
+                 [:w :!Sequal_sign]
+                 [:e :!S5]
+                 [:r :!S6]]}
+
+        {:des "Period Mode [.] as Trigger Key"
+         :rules [:period-mode
+                 [:comma ["period-comma-mode" 1] nil {:alone :comma :afterup ["period-comma-mode" 0]}]
+                 [:a [:!Sgrave_accent_and_tilde :slash]]
+                 [:s [:period :!S8]]
+                 [:d :!S9]
+                 [:f :!S0]
+                 [:q :hyphen]
+                 [:w :equal_sign]
+                 [:e :!Sopen_bracket]
+                 [:r :!Sclose_bracket]]}
+
+        {:des "Change right_command to command-tab when used alone"
+         :rules [[:right_command :right_command nil {:alone [:!Ctab]}]]}
+
+        {:des "Change right_option to 4 modifiers combination, f17 when used alone"
+         :rules [[:right_option :!COTleft_shift nil {:alone [:f17]}]]}
+
+        {:des   "Double tap left shift to Command+f14"
+         :rules [[:left_shift [:!Cf14] ["shift-pressed-once" 1]]
+                 [:left_shift
+                  :left_shift nil
+                  {:alone [:left_shift ["shift-pressed-once" 1]]
+                   :delayed {:invoked  [["shift-pressed-once" 0]]
+                             :canceled [["shift-pressed-once" 0]]}}]]}
+
+        {:des   "Double tap right shift to CapsLock"
+         :rules [[:right_shift [:caps_lock] ["rshift-pressed-once" 1]]
+                 [:right_shift :right_shift nil
+                  {:alone [:right_shift ["rshift-pressed-once" 1]]
+                   :delayed {:invoked  [["rshift-pressed-once" 0]]
+                             :canceled [["rshift-pressed-once" 0]]}}]]}
+
+        {:des   "Quit application by pressing command-q twice"
+         :rules [[;; <from> second cmd-q (when variable "command-q" is 1)
+                  :!C#Pq
+          ;; <to>, 3 to action
+          ;; 1. call cmd-q
+          ;; 2. set variable "command-q" to 0
+          ;; 3. cleanup the :cmdq notification (omit the thrid item to cleanup notification)
+                  [:!Cq ["command-q" 0] [:noti :cmdq]]
+          ;; <condition> when variable "command-q" is 1
+                  ["command-q" 1]]
+
+                 [;; <from> first cmd-q (when variable "command-q" is 0)
+                  :!C#Pq
+
+          ;; <to>, 2 to action
+          ;; 1. show notification with :id :cmdq, :text "Press Again to QUIT"
+          ;; 2. set variable "command-q" to 1 (for the second press)
+                  [[:noti :cmdq "Press Again to QUIT"] ["command-q" 1]]
+
+          ;; <condition> nil means no required condition
+                  nil
+
+          ;; <additional-option>
+                  {;; to_delayed_action documentation
+           ;; https://karabiner-elements.pqrs.org/docs/json/complex-modifications-manipulator-definition/to-delayed-action/
+                   :delayed {;; run 2 actions when no other key presses after basic.to_delayed_action_delay_milliseconds
+                     ;; 1. set variable "command-q" to 0
+                     ;; 2. cleanup notification :id :cmdq
+                             :invoked  [["command-q" 0] [:noti :cmdq]]
+
+                     ;; run 2 actions when another key presses within basic.to_delayed_action_delay_milliseconds
+                     ;; 1. set variable "command-q" to 0
+                     ;; 2. cleanup notification :id :cmdq
+                             :canceled [["command-q" 0] [:noti :cmdq]]}}]]}]
+
+; the default value is 250
+;;  :simlayer-threshold 1000
+
+ :devices {:macbook-internal [{:product_id 638 :vendor_id 1452}]
+           :filco-minila [{:product_id 34050 :vendor_id 2652}]
+           :hhkb-tmk [{:vendor_id 65261 :product_id 51966}]
+           :hhkb-bt [{:vendor_id 1278 :product_id 514}]
+           :hhkb [{:vendor_id 2131 :product_id 256}]}
+
+ :applications {:Terminals ["^com\\.apple\\.Terminal$"
+                            "^com\\.googlecode\\.iterm2$"]}
+
+ :input-sources {:sogou {:input_mode_id "com.sogou.inputmethod.pinyin"
+                         :input_source_id "com.sogou.inputmethod.sogou.pinyin"
+                         :language "zh-Hans"}
+
+                 :us {:input_mode_id ""
+                      :input_source_id "com.apple.keylayout.ABC"
+                      :language "en"}}}
