@@ -1,2 +1,4 @@
 compiled/*
 .env
+.lsp/**
+.clj-kondo/**
