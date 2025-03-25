@@ -2,3 +2,7 @@ compiled/*
 .env
 .lsp/**
 .clj-kondo/**
+*.env
+.stfolder/syncthing-folder-96f0e4.txt
+.stignore
+madpin.stignore
