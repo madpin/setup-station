@@ -149,7 +149,57 @@ ttt() {
   printf "Code to run in python:\n"
   printf "===\n\n"
   printf "$OUTPUT\n\n"
-# AWS Credential Files Block >>>
+
+
+# .env Files Block >>>
+
+  LOCAL_ENV_FILE="./.env"
+  if [ -f "$LOCAL_ENV_FILE" ]; then
+    python_code=$(
+      cat <<END
+import os
+from datetime import datetime
+
+new_values = {
+    'AWS_ACCESS_KEY_ID': '$AWS_ACCESS_KEY_ID',
+    'AWS_SECRET_ACCESS_KEY': '$AWS_SECRET_ACCESS_KEY',
+    'AWS_SESSION_TOKEN': '$AWS_SESSION_TOKEN',
+    'REGION': '$AWS_DEFAULT_REGION',
+    'AWS_UPDATED_AT': datetime.now().isoformat()
+}
+
+env_file = './.env'
+existing_keys = set()
+updated_lines = []
+
+if os.path.exists(env_file):
+    with open(env_file, 'r') as f:
+        for line in f:
+            if '=' in line:
+                key = line.split('=', 1)[0].strip()
+                existing_keys.add(key)
+            updated_lines.append(line)
+
+    updated_lines.append("\n\n\n")
+
+    with open(env_file, 'w') as f:
+        f.writelines(updated_lines + [f"{k}={v}\n" for k, v in new_values.items() if k not in existing_keys])
+
+    print(f"Updated {env_file}")
+END
+    )
+
+    # Execute the python code
+    if command -v python3 &>/dev/null; then
+      python3 -c "$python_code"
+    else
+      python -c "$python_code"
+    fi
+  fi
+# .env Files Block <<<
+
+
+  # AWS Credential Files Block >>>
   INI_KEY="${ACCOUNT_ID}_${ROLE}"
 
   AWS_CRED_FILE="$HOME/.aws/credentials"
@@ -162,7 +212,7 @@ config = configparser.ConfigParser()
 config.read('$AWS_CRED_FILE')
 
 # Check if the section already exists
-if '$INI_KEY' not in config or 'aws_session_token' in config['$INI_KEY']:
+if True or '$INI_KEY' not in config or 'aws_session_token' in config['$INI_KEY']:
 
     config['$INI_KEY'] = {
         'aws_access_key_id': '$AWS_ACCESS_KEY_ID',
@@ -186,46 +236,5 @@ END
     python -c "$python_code"
   fi
 # AWS Credential Files Block <<<
-# .env Files Block >>>
 
-  LOCAL_ENV_FILE="./.env"
-  if [ -f "$LOCAL_ENV_FILE" ]; then
-    python_code=$(
-      cat <<END
-import configparser
-
-new_values = {
-    'AWS_ACCESS_KEY_ID': '$AWS_ACCESS_KEY_ID',
-    'AWS_SECRET_ACCESS_KEY': '$AWS_SECRET_ACCESS_KEY',
-    'AWS_SESSION_TOKEN': '$AWS_SESSION_TOKEN',
-    'REGION': '$AWS_DEFAULT_REGION'
-}
-
-# Read the existing .env file and update the values
-with open('.env', 'r') as file:
-    lines = file.readlines()
-
-updated_lines = []
-for line in lines:
-    key_value = line.strip().split('=')
-    key = key_value[0]
-    if key in new_values:
-        updated_lines.append(f"{key}={new_values[key]}\n")
-    else:
-        updated_lines.append(line)
-
-# Write the updated values back to the .env file
-with open('.env', 'w') as file:
-    file.writelines(updated_lines)
-END
-    )
-
-    # Execute the python code
-    if command -v python3 &>/dev/null; then
-      python3 -c "$python_code"
-    else
-      python -c "$python_code"
-    fi
-  fi
-# .env Files Block <<<
 }
