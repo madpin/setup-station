@@ -1,0 +1,16 @@
+services:
+  lobechat:
+    image: lobehub/lobe-chat
+    container_name: lobechat
+    user: 1002:1002
+    ports:
+      - "3210:3210"
+    restart: unless-stopped
+    env_file:
+      - lobechat.env
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "http://localhost:3210"]  # Adjust if needed
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      

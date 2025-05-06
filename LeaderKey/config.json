@@ -2,7 +2,6 @@
   "actions" : [
     {
       "key" : "t",
-      "label" : "",
       "type" : "application",
       "value" : "/Applications/iTerm.app"
     },
@@ -10,62 +9,162 @@
       "actions" : [
         {
           "key" : "s",
-          "label" : "",
           "type" : "application",
           "value" : "/Applications/Safari.app"
         },
         {
           "key" : "e",
-          "label" : "",
           "type" : "application",
           "value" : "/Applications/Mail.app"
         },
         {
           "key" : "i",
-          "label" : "",
           "type" : "application",
           "value" : "/System/Applications/Music.app"
         },
         {
           "key" : "m",
-          "label" : "",
           "type" : "application",
           "value" : "/Applications/Messages.app"
         },
         {
           "key" : "f",
-          "label" : "",
           "type" : "application",
           "value" : "/Applications/Firefox.app"
+        },
+        {
+          "key" : "c",
+          "type" : "application",
+          "value" : "/Applications/Clockify Desktop.app"
+        },
+        {
+          "key" : "p",
+          "type" : "application",
+          "value" : "/Applications/Plex.app"
+        },
+        {
+          "key" : "a",
+          "type" : "application",
+          "value" : "/Applications/Arc.app"
+        },
+        {
+          "key" : "z",
+          "type" : "application",
+          "value" : "/Applications/zoom.us.app"
         }
       ],
-      "key" : "o",
-      "label" : "",
+      "key" : "q",
+      "label" : "Apps",
       "type" : "group"
     },
     {
       "actions" : [
         {
           "key" : "e",
-          "label" : "",
           "type" : "url",
           "value" : "raycast://extensions/raycast/emoji-symbols/search-emoji-symbols"
         },
         {
-          "key" : "p",
+          "key" : "c",
           "label" : "Confetti",
           "type" : "url",
           "value" : "raycast://confetti"
         },
         {
-          "key" : "c",
+          "key" : "m",
           "label" : "Camera",
           "type" : "url",
           "value" : "raycast://extensions/raycast/system/open-camera"
+        },
+        {
+          "key" : "t",
+          "label" : "Appearance",
+          "type" : "url",
+          "value" : "raycast://extensions/raycast/system/toggle-system-appearance"
         }
       ],
       "key" : "r",
-      "label" : "",
+      "label" : "Raycast",
+      "type" : "group"
+    },
+    {
+      "key" : "f",
+      "type" : "application",
+      "value" : "/System/Library/CoreServices/Finder.app"
+    },
+    {
+      "key" : "v",
+      "type" : "application",
+      "value" : "/Applications/Visual Studio Code.app"
+    },
+    {
+      "actions" : [
+        {
+          "key" : "k",
+          "type" : "application",
+          "value" : "/Applications/Karabiner-Elements.app"
+        },
+        {
+          "key" : "e",
+          "type" : "application",
+          "value" : "/Applications/Karabiner-EventViewer.app"
+        },
+        {
+          "key" : "h",
+          "type" : "application",
+          "value" : "/Applications/Hammerspoon.app"
+        }
+      ],
+      "key" : "w",
+      "label" : "Hacking",
+      "type" : "group"
+    },
+    {
+      "key" : "a",
+      "label" : "Arc Search",
+      "type" : "url",
+      "value" : "raycast://extensions/the-browser-company/arc/search"
+    },
+    {
+      "key" : "e",
+      "label" : "Emoji",
+      "type" : "url",
+      "value" : "raycast://extensions/raycast/emoji-symbols/search-emoji-symbols"
+    },
+    {
+      "actions" : [
+        {
+          "key" : "m",
+          "label" : "Media",
+          "type" : "command",
+          "value" : "open smb://MadNAS._smb._tcp.local/Media"
+        },
+        {
+          "key" : "d",
+          "label" : "Downloads",
+          "type" : "command",
+          "value" : "open \"~/Downloads\""
+        },
+        {
+          "key" : "k",
+          "label" : "Desktop",
+          "type" : "command",
+          "value" : "open ~/Desktop"
+        },
+        {
+          "key" : "t",
+          "label" : "madpin",
+          "type" : "command",
+          "value" : "open ~/madpin"
+        },
+        {
+          "key" : "n",
+          "label" : "NAS",
+          "type" : "command",
+          "value" : "open smb://MadNAS._smb._tcp.local"
+        }
+      ],
+      "key" : "g",
       "type" : "group"
     }
   ],

@@ -100,7 +100,9 @@ svenv() {
 cvenv() {
     echo "Creating virtual environment..."
     # Safely deactivate any active virtual environment
-    type deactivate >/dev/null 2>&1 && deactivate
+    if [ -n "$VIRTUAL_ENV" ]; then
+        deactivate
+    fi
 
     # Set variables with defaults
     local subfolder="${1:-}"
@@ -110,7 +112,7 @@ cvenv() {
     # Build the path based on provided arguments
     [ -n "$subfolder" ] && env_path="${env_path}/${subfolder}"
     [ -n "$ssubfolder" ] && env_path="${env_path}/${ssubfolder}"
-    env_path="${env_path}/venv"
+    env_path="${env_path}/.venv"
 
     # Try to get Python path, first from indeed-python-next, then fallback to system
     local python_path
@@ -187,6 +189,8 @@ ivenv() {
         "requirements.dev"
         "requirements.frozen"
         "requirements.base.frozen"
+        "setup-requirements.txt"
+        "setup-requirements.frozen"
     )
 
     local tier2=(
@@ -201,8 +205,15 @@ ivenv() {
 
     # Update pip and pip-tools
     echo "Updating pip and pip-tools..."
-    pip install -U pip >/dev/null
-    pip install -U pip-tools >/dev/null
+    # If uv is installed, use it to update pip and pip-tools
+    if command -v uv >/dev/null 2>&1; then
+        uv pip install -U pip >/dev/null
+        uv pip install -U pip-tools >/dev/null
+    else
+        # Otherwise, use the default pip command
+        pip install -U pip >/dev/null
+        pip install -U pip-tools >/dev/null
+    fi
 
     # Define folders to search
     local folders=("$PWD")
@@ -221,7 +232,13 @@ ivenv() {
         for file in "${files[@]}"; do
             if [[ -f "$folder/$file" ]]; then
                 echo "Installing packages from $folder/$file"
-                pip install -r "$folder/$file" --quiet
+
+                # Check if uv is installed, if so, use it to install requirements
+                if command -v uv >/dev/null 2>&1; then
+                    uv pip install -r "$folder/$file" --quiet
+                else
+                    pip install -r "$folder/$file" --quiet
+                fi
                 found=true
                 requirements_found=true
             fi

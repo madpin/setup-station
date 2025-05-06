@@ -1,123 +1,164 @@
+#!/bin/bash
 
 # Function: madrebase
-# Purpose: Rebase the current branch onto master and optionally force push the changes.
-#          This script prevents rebasing the master branch onto itself, fetches latest
-#          changes from master first and gracefully handles merge conflicts during rebase.
+# Purpose: Detects the primary branch (main or master), fetches its latest changes,
+#          rebases the current branch onto it, and optionally force pushes the changes.
+#          This script prevents rebasing the primary branch onto itself and gracefully
+#          handles merge conflicts during rebase.
 # Usage: Run 'madrebase' in your git repository's root directory.
-# Return: 0 if successful, 1 if operation fails, or user aborts from a question.
+# Return: 0 if successful, 1 if operation fails, user aborts, or primary branch not found.
 #
-# Performance: This script's performance is primarily constrained by the speed of the
-#              git commands it executes. For large repositories, `git fetch`, `git rebase` and
-#             `git push` could take time.
+# Performance: Performance is primarily constrained by git command speed (`Workspace`, `rebase`, `push`).
 #
-# Resource Usage: This script uses minimal system resources because it mostly calls git
-#             and outputs to the console,  Memory usage is low.
+# Resource Usage: Minimal system resources used (mostly calls git).
 madrebase() {
   # --- Initialization & Logging ---
 
-  # Set script debug mode flag
-  declare -i debug_mode=0
-  # If you want to turn on debug mode, set debug_mode=1 before calling the function
+  # Set script debug mode flag (set to 1 externally if needed)
+  declare -i debug_mode=${madrebase_debug_mode:-0} # Allow setting via environment variable
 
   # Function to print messages based on the debugging mode
-  # Parameter 1: Message to log
-  # Parameter 2: (Optional) Log level [info (default)|debug|error]
   log_message() {
       local message="$1"
-      local level="${2:-info}"
-      
+      local level="${2:-info}" # Default log level is info
+
       if [[ "$level" == "debug" ]]; then
           if [[ "$debug_mode" -eq 1 ]]; then
-            echo "[madrebase - DEBUG] $message"
+            # Use printf for better control and consistency
+            printf "[madrebase - DEBUG] %s\n" "$message"
           fi
       elif [[ "$level" == "error" ]]; then
-        echo "[madrebase - ERROR] $message" >&2 # output to STDERR
+        # Print errors to stderr
+        printf "[madrebase - ERROR] %s\n" "$message" >&2
       else # info is default
-          echo "[madrebase - INFO] $message" # output to STDOUT
+          # Print info messages to stdout
+          printf "[madrebase - INFO] %s\n" "$message"
       fi
   }
 
-
-  # Save the current branch
-  current_branch=$(git rev-parse --abbrev-ref HEAD)
-
-  log_message "Starting madrebase on branch: $current_branch" debug
-  
-  # --- Validation ---
-
-  # Check if the current branch is master and abort
-  if [[ "$current_branch" = "master" ]]; then
-    log_message "Cannot rebase master onto itself. Aborting." error
-    return 1
-  fi
-  
-  # check that we are running in a git repo
+  # --- Pre-checks ---
+  # Check that we are running in a git repo first
   if ! git rev-parse --is-inside-work-tree > /dev/null 2>&1; then
     log_message "Not inside a git working tree. Aborting." error
     return 1
   fi
 
-  # --- Fetching Latest Master ---
-
-  log_message "Fetching the latest changes from origin/master..." debug
-  if ! git fetch origin master:master; then
-    log_message "Failed to fetch from origin. Aborting." error
-    return 1
-  fi
-  log_message "Successfully fetched the latest changes from origin/master." debug
-  
-  # --- Rebase Operations ---
-  
-  log_message "Attempting to rebase $current_branch onto master..." debug
-  # Attempt interactive rebase using GIT_SEQUENCE_EDITOR to skip editor launch
-  GIT_SEQUENCE_EDITOR=":" git rebase -i master
-    
-  # Check if rebase was successful
-  if [[ $? -eq 0 ]]
-  then
-      log_message "Rebase successful." debug    
-
-    # --- Prompt for force push ---
-    read -r -p "Rebase successful. Force push? (y/N) " REPLY
-    log_message "User input: $REPLY" debug
-
-    # force push if 'y/Y'
-    if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-      log_message "Force pushing changes to origin/$current_branch..." debug
-      # Force push with lease for safety
-      if ! git push origin "$current_branch" --force-with-lease; then
-        log_message "Force push failed. Aborting." error
-        return 1
-      fi
-        
-      log_message "Force push successful!"
-    else
-        log_message "Aborted push."
-    fi
-
+  # --- Determine Primary Branch (main or master) ---
+  local primary_branch=""
+  # Check for 'main' first (newer convention)
+  if git show-ref --verify --quiet refs/remotes/origin/main; then
+      primary_branch="main"
+      log_message "Detected primary remote branch: main" debug
+  # Fallback to check for 'master'
+  elif git show-ref --verify --quiet refs/remotes/origin/master; then
+      primary_branch="master"
+      log_message "Detected primary remote branch: master" debug
   else
-    
-    log_message "Merge conflict detected. Reverting rebase..." error
-    # Attempt to abort rebase
-    if ! git rebase --abort; then
-      log_message "Failed to abort rebase. You may need to resolve the conflicts manually." error
-      
-    fi
-    log_message "Rebase aborted successfully. Changes reverted to state before rebase attempt."
-    return 1
-
+      log_message "Could not determine primary branch. Neither origin/main nor origin/master found remotely." error
+      log_message "Please ensure your remote 'origin' is configured correctly and has a 'main' or 'master' branch." error
+      return 1
   fi
-  
-  log_message "madrebase completed successfully." 
-  return 0
+  log_message "Using '$primary_branch' as the primary branch."
+
+  # --- Get Current Branch ---
+  local current_branch
+  current_branch=$(git rev-parse --abbrev-ref HEAD)
+  if [[ -z "$current_branch" ]] || [[ "$current_branch" == "HEAD" ]]; then
+      log_message "Could not determine current branch name or in detached HEAD state. Aborting." error
+      return 1
+  fi
+  log_message "Starting madrebase on branch: $current_branch (rebasing onto $primary_branch)" debug
+
+  # --- Validation ---
+  # Check if the current branch is the primary branch and abort
+  if [[ "$current_branch" == "$primary_branch" ]]; then
+    log_message "Current branch is '$primary_branch'. Cannot rebase '$primary_branch' onto itself. Aborting." error
+    return 1
+  fi
+
+  # --- Fetching Latest Primary Branch ---
+  log_message "Fetching the latest changes from origin/$primary_branch..." debug
+  # Fetch directly into the local primary branch ref for efficiency
+  if ! git fetch origin "$primary_branch":"$primary_branch"; then
+    log_message "Failed to fetch from origin/$primary_branch. Check connection and permissions. Aborting." error
+    return 1
+  fi
+  log_message "Successfully fetched the latest changes for '$primary_branch'." debug
+
+  # --- Rebase Operations ---
+  log_message "Attempting to rebase '$current_branch' onto '$primary_branch'..." debug
+  # Attempt interactive rebase using GIT_SEQUENCE_EDITOR to skip editor launch when no conflicts
+  # Using 'true' instead of ':' might be slightly more portable/readable, though ':' works widely.
+  if GIT_SEQUENCE_EDITOR=true git rebase -i "$primary_branch"; then
+      # --- Rebase Successful ---
+      log_message "Rebase successful." debug
+
+      # --- Prompt for force push ---
+      local REPLY
+      # Use -n 1 to read only one character, -r for raw input
+      read -n 1 -r -p "[madrebase - INFO] Rebase successful. Force push '$current_branch' to origin? (y/N) " REPLY
+      echo # Move to a new line after read
+
+      log_message "User input for push: '$REPLY'" debug
+
+      # force push if 'y' or 'Y'
+      if [[ "$REPLY" =~ ^[Yy]$ ]]; then
+          log_message "Force pushing changes to origin/$current_branch..." debug
+          # Force push with lease for safety
+          if ! git push origin "$current_branch" --force-with-lease; then
+              log_message "Force push failed. The remote branch may have changed. Fetch and try again. Aborting push." error
+              # Note: Rebase was successful, but push failed. Consider the return code.
+              # Returning 1 indicates the *overall operation* wasn't fully completed as requested.
+              return 1
+          fi
+          log_message "Force push successful!"
+      else
+          log_message "Push aborted by user."
+          # Return success because the rebase worked, even if push was skipped.
+          # Or return 1 if skipping the push should be considered an 'aborted operation'. Let's stick to 0 for successful rebase.
+      fi
+  else
+      # --- Rebase Failed (likely conflicts) ---
+      local rebase_exit_code=$?
+      log_message "Rebase failed (exit code: $rebase_exit_code). Potential conflicts detected." error
+      log_message "Attempting to abort the rebase..." error
+
+      # Attempt to abort rebase
+      if ! git rebase --abort; then
+          log_message "CRITICAL: Failed to automatically abort rebase." error
+          log_message "Your repository might be in a mid-rebase state. Please resolve manually (e.g., 'git rebase --abort' or resolve conflicts and 'git rebase --continue')." error
+      else
+          log_message "Rebase aborted successfully. Changes reverted to state before rebase attempt."
+      fi
+      return 1 # Indicate failure
+  fi
+
+  log_message "madrebase completed on branch '$current_branch'."
+  return 0 # Indicate success
 }
 
+# --- Example Usage ---
+# To enable debug mode for a single run:
+# madrebase_debug_mode=1 madrebase
 
-# Function: madpush
-# Purpose: Push the current branch to the remote repository.
-# Usage: Run 'madpush' in your git repository's root directory.
-# Return: 0 if successful, 1 if operation fails.
+# To call normally:
+# madrebase
+
+# Note: The madpush function from the original script remains unchanged
+# and would need separate adaptation if it should also detect the primary branch,
+# although its current simple purpose might not require that.
 madpush() {
+  local current_branch
   current_branch=$(git rev-parse --abbrev-ref HEAD)
-  git push origin "$current_branch" --force-with-lease
+  if [[ -z "$current_branch" ]] || [[ "$current_branch" == "HEAD" ]]; then
+      printf "[madpush - ERROR] Could not determine current branch name or in detached HEAD state. Aborting.\n" >&2
+      return 1
+  fi
+  printf "[madpush - INFO] Force-pushing (with lease) branch '%s' to origin...\n" "$current_branch"
+  if ! git push origin "$current_branch" --force-with-lease; then
+      printf "[madpush - ERROR] Force push failed. Remote may have changed. Fetch and retry.\n" >&2
+      return 1
+  fi
+   printf "[madpush - INFO] Force push successful for branch '%s'.\n" "$current_branch"
+   return 0
 }
