@@ -202,12 +202,12 @@
                    :delayed {:invoked  [["shift-pressed-once" 0]]
                              :canceled [["shift-pressed-once" 0]]}}]]}
 
-        {:des   "Double tap right shift to CapsLock"
-         :rules [[:right_shift [:caps_lock] ["rshift-pressed-once" 1]]
-                 [:right_shift :right_shift nil
-                  {:alone [:right_shift ["rshift-pressed-once" 1]]
-                   :delayed {:invoked  [["rshift-pressed-once" 0]]
-                             :canceled [["rshift-pressed-once" 0]]}}]]}
+        ;; {:des   "Double tap right shift to CapsLock"
+        ;;  :rules [[:right_shift [:caps_lock] ["rshift-pressed-once" 1]]
+        ;;          [:right_shift :right_shift nil
+        ;;           {:alone [:right_shift ["rshift-pressed-once" 1]]
+        ;;            :delayed {:invoked  [["rshift-pressed-once" 0]]
+        ;;                      :canceled [["rshift-pressed-once" 0]]}}]]}
 
         {:des   "Quit application by pressing command-q twice"
          :rules [[;; <from> second cmd-q (when variable "command-q" is 1)
