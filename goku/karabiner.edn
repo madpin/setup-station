@@ -193,14 +193,13 @@
 
         {:des "Change right_option to 4 modifiers combination, f17 when used alone"
          :rules [[:right_option :!COTleft_shift nil {:alone [:f17]}]]}
-
-        {:des   "Double tap left shift to Command+f14"
-         :rules [[:left_shift [:!Cf14] ["shift-pressed-once" 1]]
-                 [:left_shift
-                  :left_shift nil
-                  {:alone [:left_shift ["shift-pressed-once" 1]]
-                   :delayed {:invoked  [["shift-pressed-once" 0]]
-                             :canceled [["shift-pressed-once" 0]]}}]]}
+        {:des   "Double tap left control to Command+f14"
+         :rules [[:left_control [:!Cf14] ["control-pressed-once" 1]]
+           [:left_control
+            :left_control nil
+            {:alone [:left_control ["control-pressed-once" 1]]
+             :delayed {:invoked  [["control-pressed-once" 0]]
+                 :canceled [["control-pressed-once" 0]]}}]]}
 
         ;; {:des   "Double tap right shift to CapsLock"
         ;;  :rules [[:right_shift [:caps_lock] ["rshift-pressed-once" 1]]
